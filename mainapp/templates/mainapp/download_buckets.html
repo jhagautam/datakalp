@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Download videos from s3 {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="container mt-7">
+    <div class="col-12-xs">
+        <div class="row justify-content-center mb-3 mb-md-4">
+            <div class="col-12 col-md-8 text-center">
+                <h4>S3 Bucket Data</h4>
+            </div>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success" role="alert">
+           {% for message in messages %}
+           <p>{{ message }}</p>
+           {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <hr>
+        <table class="table table-striped">
+            <tr>
+                <th>Filename</th>
+                <th>Last Modified</th>
+                <th>Actions</th>
+            </tr>
+            {% for f in files %}
+            <tr>
+                <td style="padding:0.2rem;">{{ f.key }}</td>
+                <td style="padding:0.2rem;">{{ f.last_modified | datetimeformat }}</td>
+                <td style="padding:0.2rem;">
+                    <form class="download-form" action="{{ url_for('downloadvideos') }}" method="POST">
+                        <input type="hidden" name="key" value="{{ f.key }}">
+                        <button type="submit" class="btn btn-default btn-sm">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

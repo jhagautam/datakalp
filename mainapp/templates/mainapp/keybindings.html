@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Keybindings {% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="container mt-7">
+    <div class="row justify-content-center mb-3 mb-md-4">
+        <div class="col-12 col-md-8 text-center">
+            <h4>Key bindings</h4>
+        </div>
+    </div>
+    {% for category, message in get_flashed_messages(with_categories=True) %}
+      <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %}
+    <form action="{{ url_for('keybindings') }}" method="POST">
+        <div class="row">
+            {% for column in keybinding.items() | slice(4) %}
+            <div class="col-3">
+                {% for k,v in column %}
+                <div class="form-group">
+                    <label for="{{k}}">{{k}}</label>
+                    <div class="input-group mb-4">
+                        <input class="form-control" name="{{k}}" aria-label="Input group" type="text" maxlength="32"
+                        {% if k=='fullscreenToggle' or k=='playToggle' or k=='muteToggle' %} placeholder="{{v}}" disabled {% else %} value="{{v}}" {% endif %}
+                         />
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary mb-2" type="submit">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

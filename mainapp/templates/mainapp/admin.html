@@ -1,0 +1,104 @@
+{% extends "mainapp/layouts/base.html" %} {% load static %} {% block title %} Video Annotation Tool {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link href="{% static 'css/admin.css' %}" />
+<link href="{% static 'css/dropdown.css' %}" /> {% endblock stylesheets %} {% block content %}
+<style>
+
+</style>
+<section class="section section-lg pt-3 mt-150">
+    <div class="container">
+        <div class="row mb-30">
+            <div class="col-12 mb-20">
+                <h3>Welcome {{user.name}} !! You are logged in as Admin.</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <ul>
+                    <li>
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus omnis quisquam ullam aliquam eius voluptas autem deserunt repellendus sit earum?
+                    </li>
+                    <li>
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus omnis quisquam ullam aliquam eius voluptas autem deserunt repellendus sit earum?
+                    </li>
+                    <li>
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus omnis quisquam ullam aliquam eius voluptas autem deserunt repellendus sit earum?
+                    </li>
+                    <li>
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus omnis quisquam ullam aliquam eius voluptas autem deserunt repellendus sit earum?
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-lg pt-3 pb-6 mt-20 mb-150">
+    <div class="container">
+        <div class="row bg-info">
+            <div class="col-12 pull-left float-left">
+                <div class="icon-box text-center">
+                    <h3 class="h5 pb-0" style="color: white;">Upload a CSV File</h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <form class="form-inline" method="POST" enctype="multipart/form-data" action="{% url 'upload_csv' %}">
+                    {% csrf_token %}
+                    <div class="form-group col-6 bg-light">
+                        <input type="file" name="csv_file" id="csv_file" required="True" class="form-control-file">
+                    </div>
+                    <div class="form-group col-6 pull-right float-right">
+                        <button type="submit" class="btn btn-sm btn-primary btn m-2 btn-block "><span class="glyphicon glyphicon-upload" style="margin-right:5px;"></span>Upload</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<section class="section section-lg pt-3 pb-6 mt-150 mb-150">
+    <div class="container">
+        <div class="row bg-info">
+            <div class="col-12 pull-left float-left">
+                <div class="icon-box text-center">
+                    <h3 class="h5 pb-0" style="color: white;">Review Annotators</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-lg pt-3 pb-6 mt-150 mb-150">
+    <div class="container">
+        <div class="row bg-info">
+            <div class="col-12 pull-left float-left">
+                <div class="icon-box text-center">
+                    <h3 class="h5 pb-0" style="color: white;">Videos Annotated</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %} {% block javascripts %}
+<script>
+    $(document).ready(function() {
+        $('form input').change(function() {
+            $('form p').text(this.files.length + " file(s) selected");
+        });
+    });
+</script>
+{% endblock javascripts %}

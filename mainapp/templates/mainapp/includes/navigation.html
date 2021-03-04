@@ -1,0 +1,44 @@
+ {% load static %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+<header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'login_redirect_view' %}" class="logo"><em>Video</em>Annotator</a> {% else %}
+                    <a class="logo" href="{% url 'index' %}">
+                        <em> Video</em>Annotator
+                    </a>
+                    {% endif %}
+                    <!-- ***** Logo End ***** -->
+
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav" id="navbarSupportedContent">
+                        {% if user.is_authenticated %}
+                        <!-- <li class="scroll-to-section"><a href="{% url 'index' %}">Download Videos</a></li>  -->
+                        <!-- <li class="scroll-to-section"> <a href="{% url 'keybindings' %}">Key bindings</a></li> -->
+                        <!-- <li class="scroll-to-section"> <a href="{% url 'labels' %}">Labels</a></li> -->
+
+                        <li class="scroll-to-section"><a href="{% url 'logout' %}">Log Out</a></li>
+                        <li class=""><a href="{% url 'login_redirect_view' %}">{{user.name}}</a></li>
+                        {% else %}
+                        <li class="scroll-to-section"><a href="/" class="active">Home</a></li>
+                        <li class="scroll-to-section"><a href="/">About</a></li>
+                        <li class="scroll-to-section"><a href="/">Contact</a></li>
+                        <li class="scroll-to-section"><a href="{% url 'login' %}">Log In</a></li>
+                        <li class="main-button"><a href="{% url 'register' %}">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>

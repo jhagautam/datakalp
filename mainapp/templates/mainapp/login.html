@@ -1,0 +1,22 @@
+{% extends 'mainapp/base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<block></block>
+<div class="container format-css">
+            <form action="" method="POST">
+                {% csrf_token %}
+
+            <div class="contact-form">
+                <fieldset>{{form|crispy}}</fieldset>
+                <div class="form-group ">        
+                  <div class="col-md col-sm-10">
+                    <button type="submit" class="btn block btn-outline-info">Login</button>
+                  </div>
+                </div>
+            </div>
+        </form>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'mainapp/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<h1 style="margin-top: 80px;"></h1>
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<h1>Welcome Back {{user.name}}</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<video width='900' controls>
+				<source src="{% static 'vid/chart1.mp4' %}" type='video/mp4'>
+				Your browser does not support the video tag.
+				</video>
+		</div>
+	</div>
+</div>
+{% endblock %}
