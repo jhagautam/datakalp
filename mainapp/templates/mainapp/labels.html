@@ -1,0 +1,40 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Labels {% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="container mt-7">
+    <div class="row justify-content-center mb-3 mb-md-4">
+        <div class="col-12 col-md-8 text-center">
+            <h4>Labels</h4>
+        </div>
+    </div>
+    {% for category, message in get_flashed_messages(with_categories=True) %}
+      <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %}
+    <form action="{{ url_for('labels') }}" method="POST">
+        <div class="row">
+            {% for column in labels.items() | slice(3) %}
+            <div class="col-4">
+                {% for k,v in column %}
+                <div class="form-group">
+                    <label for="{{k}}">{{k}}</label>
+                    <div class="input-group mb-4">
+                        <input class="form-control" name="{{k}}" value="{{v}}" aria-label="Input group" type="text" maxlength="256">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary mb-2" type="submit">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

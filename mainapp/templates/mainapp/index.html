@@ -1,0 +1,622 @@
+{% extends "mainapp/layouts/base.html" %}
+{% load static %}
+{% block title %} Video Annotation Tool {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link href="{% static 'css/dropdown.css' %}" />
+<link href="{% static 'assets/css/video-js.css' %}" rel="stylesheet" />
+<link href="{% static 'assets/css/video-js.min.css' %}" rel="stylesheet" />
+<!-- <link href="https://unpkg.com/@videojs/themes@1/dist/forest/index.css" rel="stylesheet"> -->
+<!-- <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" /> -->
+<link href="https://unpkg.com/video.js@7/dist/video-js.min.css" rel="stylesheet">
+
+<!-- City -->
+<link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css" rel="stylesheet">
+
+<!-- Fantasy -->
+<link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet">
+
+<!-- Forest -->
+<link href="https://unpkg.com/@videojs/themes@1/dist/forest/index.css" rel="stylesheet">
+
+<!-- Sea -->
+<link href="https://unpkg.com/@videojs/themes@1/dist/sea/index.css" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="section section-lg pt-3 pb-6 mt-150">
+    <div class="container text-center">
+        <!-- <div class="row justify-content-center mb-3 mb-md-4">
+            <div class="col-12 col-md-8 text-center">
+                <h4>Welcome back, <span class="text-info font-weight-bold">{{user.name}}</span></h4>
+            </div>
+        </div> -->
+        <div class="row mb-5">
+            <div class="col col-lg-12 col-md-12 text-left">
+                <ul>Points to remember:
+                <li>Keybindings work only when the video player is active/selected.</li>
+                <li>Downloaded videos are removed on logout.</li>
+                <li>Segment can be selected by moving the seek bar only when the video is paused or by clicking desired segment in segments list.</li>
+                <li>In edit segment mode, segments can be switched in between for editting but to exit it last selected segment must be finalized.</li>
+            </div>
+            
+        </div>
+        <div class="row mb-5">
+            <div class="col col-lg-6 col-md-6 text-left">
+                <div class="form-group">
+
+                    <label for="availableVideosSelect">Select video to annotate: </label>
+                    <select id="availableVideosSelect" class="form-control">
+
+                        <option value={{video_src}}>Example video</option>
+                        <option value="{% static 'assets/vids/my-video.mp4' %}">Example video2</option>
+                        <!-- {% for file in available_videos %}
+                            <option value=" "> </option>
+                        {% endfor %} -->
+                    </select>
+                </div>
+            </div>
+            <div class="col col-lg-6 col-md-6 text-left">
+                <div class="form-group">
+                    <label for="availableVideostoEdit">Select video to edit: </label>
+                    <select id="availableVideostoEdit" class="form-control">
+                        <option value="">Example video</option>
+                        {% for file in available_videos %}
+                            <option value=" "> </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!-- <div class="col col-lg-2 col-md-4 text-center">
+                <button class="btn btn-sm btn-info mb-1" type="button" id="downloadBucketsButton">Download videos</button>
+            </div> -->
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <div class="d-flex justify-content-between">
+                    <div>FPS: <span id="fpsText">30</span></div>
+                    <div>Current frame: <span id="currentFrameText">0</span></div>
+                    <div>
+                        <input type="number" name="gotoframe" id='gotoframe' placeholder="Jump to a frame">
+                        <div class="btn btn-sm btn-info" type='submit' onclick="getFramefunction()">Get</div>
+                    </div>
+                </div>
+                <!-- <video width='100%' controls>
+                            <source src="{% static 'assets/vids/my-video.mp4' %}" type='video/mp4'>
+                            Your browser does not support the video tag.
+                </video> -->
+                <video id="my-player" class="video-js vjs-theme-fantasy vjs-fluid " data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
+                    <source id="videoSource" src="/static/assets/vids/my-video.mp4" type="video/mp4"></source>
+                </video>
+                <div class="row align-items-center justify-content-around">
+                    <div class="col-6">
+                        <div class="col-2 pull-left float-left">
+                        <button class="btn btn-light btn-block mt-2 specialElements" type="button" id="backwardButton"><span class="fas fa-step-backward"></span></button>
+                    </div>
+                    <div class="col-9">
+                        <div class="btn-group btn-group-toggle mt-2" data-toggle="buttons">
+                            <label class="btn btn-small btn-outline-gray active">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe1" value="1" autocomplete="off" checked> 1
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe10" value="10" autocomplete="off"> 10
+                            </label>
+                            <!-- <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe50" value="50" autocomplete="off"> 50
+                            </label> -->
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe100" value="100" autocomplete="off"> 100
+                            </label>
+                            <!-- <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe300" value="300" autocomplete="off"> 300
+                            </label> -->
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="col-2 pull-right float-right">
+                        <button class="btn btn-light btn-block mt-2 specialElements" type="button" id="forwardButton"><span class="fas fa-step-forward"></span></button></div>
+                        <div class="col-9 pull-right float-right">
+                        <div class="btn-group btn-group-toggle mt-2" data-toggle="buttons">
+                            <label class="btn btn-small btn-outline-gray active">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe1" value="1" autocomplete="off" checked> 1
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe10" value="10" autocomplete="off"> 10
+                            </label>
+                            <!-- <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe50" value="50" autocomplete="off"> 50
+                            </label> -->
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe100" value="100" autocomplete="off"> 100
+                            </label>
+                            <!-- <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe300" value="300" autocomplete="off"> 300
+                            </label> -->
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- <div class="row align-items-center justify-content-around">
+                    <div class="col-6">
+                        <div class="btn-group btn-group-toggle mt-2" id="backwardButton" data-toggle="buttons">
+                            <label class="btn btn-small btn-outline-gray active">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe1" value="1"> 1
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe10" value="10" autocomplete="off"> 10
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe50" value="50" autocomplete="off"> 50
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe100" value="100" autocomplete="off"> 100
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="backwardframe" id="backwardframe300" value="300" autocomplete="off"> 300
+                            </label>
+						</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="btn-group btn-group-toggle mt-2" data-toggle="buttons" id="forwardButton">
+                            <label class="btn btn-small btn-outline-gray active">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe1" value="1"> 1
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe10" value="10" > 10
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe50" value="50"> 50
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe100" value="100" autocomplete="off"> 100
+                            </label>
+                            <label class="btn btn-small btn-outline-gray">
+                                <input class="specialElements" type="radio" name="forwardframe" id="forwardframe300" value="300" autocomplete="off"> 300
+                            </label>
+						</div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <!-- <div class="col-12 col-lg-12"> -->
+            
+                <div class=" p-2 col-12 col-lg-12">
+                    <div class="row bg-info">
+                        <div class="col-12 pull-left float-left">
+                            <div class="icon-box text-center">
+                                <h3 class="h5 pb-0" style="color: white;">New segment</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bg-info bg-light">
+                    <div class="col-3">
+                    <div class="position-relative text-left">
+                        <div class="form-group">
+                            <label for="startSegmentInput">Start Frame</label>
+                            <div class="input-group mb-1">
+                                <input class="form-control" id="startSegmentInput" value="-1" aria-label="Input group" type="text" pattern="\d*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="endSegmentInput">End Frame</label>
+                            <div class="input-group mb-1">
+                                <input class="form-control" id="endSegmentInput" value="-1" aria-label="Input group" type="text" pattern="\d*">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                    <label for="labelRadios" class="h6">Label</label>
+                    <section class="container">
+                        <div class="d-flex flex-column m-1 dropdown dropdown-dark form-group input-group mb-1">
+                            <select id="labelRadios" class="dropdown-select form-group input-group mb-1">
+                                <option class="form-check-input" id="labelRadios1" value="Label 1" checked>Label 1</option>
+                                <option id="labelRadios2" value="Label 2">Label 2</option>
+                                <option id="labelRadios3" value="Label 3">Label 3</option>
+                                <option id="labelRadios4" value="Label 4">Label 4</option>
+                                <option id="labelRadios5" value="Label 5">Label 5</option>
+                                <option id="labelRadios6" value="Label 6">Label 6</option>
+                                <option id="labelRadios7" value="Label 7">Label 7</option>
+                                <option id="labelRadios8" value="Label 8">Label 8</option>
+                                <option id="labelRadios9" value="Label 9">Label 9</option>
+                                <option id="labelRadios10" value="Label 10">Label 10</option>
+                                <option id="labelRadios11" value="Label 11">Label 11</option>
+                                <option id="labelRadios12" value="Label 12">Label 12</option>
+                            </select>
+                        </div>
+                    </section>
+                        </div>
+                
+                    <div class="col-2">
+                        <button id="createSegmentButton" class="btn btn-sm btn-outline-info btn-block mt-4" type="button">segment</button>
+                       
+                    </div>
+                </div>
+            </div>
+                
+            <div class="col-12 col-lg-12 p-2">
+                
+                    <div class="row bg-info">
+                        <div class="col-12">
+                            <h3 class="h5 pb-0" style="color: white;">Segments</h3>
+                        </div>
+                    </div>
+                </div>
+                    <p id='label-list-help-text'>Segment list is empty. Create One!!</p>
+                <div class="col-lg-12 p-0">
+                    <div class="position-relative">
+                        <ul id="label-list" class="nav nav-pills square nav-fill flex-row horizontal-tab" ></ul>
+                    </div>
+                </div>
+                <div>
+                    <div><p id="segmentHelpText" class="text" style="font-size:0.8em; position: relative;"></p></div>
+                </div>
+        <!-- </div> -->
+    </div>
+</section>
+
+<section class="section section-md components-section p-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-center">
+                <button id="generateJsonButton" class="btn btn-primary" type="button">Generate json</button>
+                <button id="resetFullButton" class="btn btn-danger" type="button">Reset</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-md">
+    <div class="container">
+        <p>
+            <i>Note: If any issues are encountered with hotkeys and key bindings,
+            then please disable any chrome extension like 'video speed controller',
+            etc which affects video player in browser by overriding key shortcuts.</i>
+        </p>
+    </div>
+</section>
+
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'assets/js/video.min.js' %}"></script>
+<script src="{% static 'assets/js/videoframe.min.js' %}"></script>
+<script>
+
+    
+    // Define aux vars
+    var segments = [];
+    var currentSelectedIndex = -1;
+    var currentSelectedStart = -1;
+    var currentSelectedEnd = -1;
+
+    // update segment helper text
+    function updateSegmentHelperText(message, category) {
+        if (category=="success") {
+            $("#segmentHelpText").removeClass("text-danger");
+            $("#segmentHelpText").removeClass("text-info");
+            $("#segmentHelpText").addClass("text-success");
+        } else if (category=="danger") {
+            $("#segmentHelpText").removeClass("text-success");
+            $("#segmentHelpText").removeClass("text-info");
+            $("#segmentHelpText").addClass("text-danger");
+        } else if (category=="info") {
+            $("#segmentHelpText").removeClass("text-success");
+            $("#segmentHelpText").removeClass("text-danger");
+            $("#segmentHelpText").addClass("text-info");
+        } else if (category=="none") {
+            $("#segmentHelpText").removeClass("text-success");
+            $("#segmentHelpText").removeClass("text-danger");
+            $("#segmentHelpText").removeClass("text-info");
+        }
+
+        $("#segmentHelpText").text(message);
+    }
+
+    // Create player object
+    var options = {
+        autoplay: false,
+        controls: true,
+        loop: false,
+        height: 480,
+        muted: false,
+        preload: "none",
+        src: "/static/assets/vids/my-video.mp4",
+        width: 640,
+        fluid: true,
+        userActions: {
+            hotkeys: true,
+            doubleClick: true
+        },
+    };
+    var player = videojs('my-player', options, function onPlayerReady() {
+        videojs.log('Your player is ready!');
+    });
+    // set player and video object
+    var video = VideoFrame({
+        id: 'my-player_html5_api',
+        frameRate: 30,
+        callback: function(response, format) {
+            videojs.log(format);
+        }
+    });
+    // Forward and backward frame seeking
+
+
+
+    function frameForward() {
+        player.pause();
+        var framesToSkip = $('input[name="forwardframe"]:checked').val();
+        // $('input:radio[name="forwardframe"]').removeAttr('checked');
+        $("input[name='forwardframe']").attr("checked", false);
+        // $('input:radio[name="forwardframe"]').prop('checked', false);
+        video.seekForward(framesToSkip, null);
+        $("input[name='forwardframe']").attr("checked", false);
+    }
+    function frameBackward() {
+        player.pause();
+        var framesToSkip = $('input[name="backwardframe"]:checked').val();
+        $('input:radio[name="backwardframe"]').removeAttr('checked');
+        $('input:radio[name="backwardframe"]').prop('checked', false);
+        video.seekBackward(framesToSkip, null);
+    }
+    // Reset vars
+    function reset() {
+        currentSelectedIndex = -1;
+        currentSelectedStart = -1;
+        currentSelectedEnd = -1;
+
+        $("#startSegmentInput").val(-1);
+        $("#endSegmentInput").val(-1);
+        $("#labelRadios1").prop("checked", true);
+    }
+    // Delete segment
+    function removeSegment(start, end, index) {
+        segments.splice(index, 1);
+        $("li[data-start-frame='"+start+"'][data-end-frame='"+end+"']").remove();
+        if (segments.length<1) {$("#label-list-help-text").show();}
+    }
+    // Select segment
+    function selectSegment(start, end, index) {
+        if (currentSelectedIndex==index) {return;}
+        if (currentSelectedIndex!=-1) {
+            $("li[data-start-frame='"+currentSelectedStart+"'][data-end-frame='"+currentSelectedEnd+"'] > a").removeClass("active");
+        }
+        currentSelectedIndex = index;
+        currentSelectedStart = start;
+        currentSelectedEnd = end;
+
+        $("#startSegmentInput").val(start);
+        $("#endSegmentInput").val(end);
+        $('input[type="radio"][value="'+segments[index]["ActivityLabel"]+'"]').prop("checked", true);
+        $("li[data-start-frame='"+start+"'][data-end-frame='"+end+"'] > a").addClass("active");
+
+        updateSegmentHelperText("Segment "+start+":"+end+" selected!!", "info");
+    }
+    // Finalize segment
+    function finalizeSegment() {
+        player.pause();
+
+        var currentStartFrame = parseInt($("#startSegmentInput").val(), 10);
+        var currentEndFrame = parseInt($("#endSegmentInput").val(), 10);
+        // var selectedLabel = $('input[name="labelRadios"]:checked').val();
+        var selectedLabel =  document.getElementById("labelRadios").value;
+        console.log('selected label ', selectedLabel);
+
+        // check value
+        if (currentStartFrame==-1 || currentEndFrame==-1 || currentEndFrame - currentStartFrame<=0) {
+            updateSegmentHelperText("Frame range is not correctly set. Please try again!!", "danger");
+            return;
+        }
+        // check overlap
+        for (i = 0; i<segments.length; i++) {
+            if (currentSelectedIndex!=-1 && currentSelectedIndex==i) {
+                continue; // skip this one
+            }
+            if ((currentStartFrame>=segments[i]['StartFrame'] && currentStartFrame<=segments[i]['EndFrame']) ||
+            (currentEndFrame>=segments[i]['StartFrame'] && currentEndFrame<=segments[i]['EndFrame'])) {
+                updateSegmentHelperText("Cannot create or edit segment because of overlapping segments. Retry!!", "danger");
+                return;
+            }
+        }
+
+        // editting selected segment
+        if (currentSelectedIndex!=-1) {
+            segments[currentSelectedIndex] = {
+                "StartFrame": currentStartFrame,
+                "EndFrame": currentEndFrame,
+                "ActivityLabel": selectedLabel
+            };
+
+            $("li[data-start-frame='"+currentSelectedStart+"'][data-end-frame='"+currentSelectedEnd+"'] > a").removeClass("active");
+            $("li[data-start-frame='"+currentSelectedStart+"'][data-end-frame='"+currentSelectedEnd+"']").attr("data-start-frame", currentStartFrame);
+            $("li[data-start-frame='"+currentStartFrame+"'][data-end-frame='"+currentSelectedEnd+"']").attr("data-end-frame", currentEndFrame);
+            $("li[data-start-frame='"+currentStartFrame+"'][data-end-frame='"+currentEndFrame+"'] > a > p > span.startSpan").text(currentStartFrame);
+            $("li[data-start-frame='"+currentStartFrame+"'][data-end-frame='"+currentEndFrame+"'] > a > p > span.endSpan").text(currentEndFrame);
+            $("li[data-start-frame='"+currentStartFrame+"'][data-end-frame='"+currentEndFrame+"'] > a > p > span.totalSpan").text(currentEndFrame-currentStartFrame+1);
+            $("li[data-start-frame='"+currentStartFrame+"'][data-end-frame='"+currentEndFrame+"'] > a > span.labelSpan").text(selectedLabel);
+
+            updateSegmentHelperText("Segment edited", "info");
+        }
+        // creating new segment
+        else {
+            segments.push({
+                "StartFrame": currentStartFrame,
+                "EndFrame": currentEndFrame,
+                "ActivityLabel": selectedLabel
+            });
+
+            $("#label-list-help-text").hide();
+
+            // $("#label-list").append('<tr><td>'currentStartFrame'</td><td>'currentEndFrame'</td><td>'(currentEndFrame-currentStartFrame+1)'</td></tr>');
+
+            $("#label-list").append('<li class="nav-item" style="background-color: #FCF3CF; padding: 0;" data-start-frame="'
+                +currentStartFrame+'" data-end-frame="'+currentEndFrame+
+                '"><a class="nav-link" data-toggle="tab" href="#"><p class="d-block">'
+                +'<b>Frame:</b> <span class="startSpan">'+currentStartFrame+'</span> to <span class="endSpan">'+currentEndFrame+
+                '</span><br><b>Total frames:</b> <span class="totalSpan">'+(currentEndFrame-currentStartFrame+1)+
+                '</span></p><span class="badge badge-pill badge-success labelSpan">'+selectedLabel+'</span></a></li>');
+
+            // $("#label-list").append('<tr class="nav-item" data-start-frame="'
+            //     +currentStartFrame+'" data-end-frame="'+currentEndFrame+
+            //     '"><a class="nav-link" data-toggle="tab" href="#"><tr class="d-block">'
+            //     +'<td class="startSpan">'+currentStartFrame+'</td> <td class="endSpan">'+currentEndFrame+
+            //     '</td> <td class="totalSpan">'+(currentEndFrame-currentStartFrame+1)+
+            //     '</td><td class="badge badge-pill badge-success labelSpan">'+selectedLabel+'</td></tr></a></tr>');
+
+            updateSegmentHelperText("Added new segment!!", "success");
+            console.log('created');
+            alert('created');
+        }
+
+        reset();
+    }
+    $("#forwardButton").click(e => {
+        e.preventDefault();
+        frameForward();
+        $("#my-player_html5_api").focus();
+    })
+    $("#backwardButton").click(e => {
+        e.preventDefault();
+        frameBackward();
+        $("#my-player_html5_api").focus();
+    })
+    // $(".specialElements").click(e => {
+    //     e.preventDefault();
+    //     $("#my-player_html5_api").focus();
+    // })
+
+  
+    // Select segment by seek bar
+    player.on('timeupdate', function() {
+        var currentFrame = video.get();
+        $("#currentFrameText").text(currentFrame);
+
+        // Try to select segment only if player is paused
+        // if (player.paused()) {
+            var foundStartFrame = -1;
+            var foundEndFrame = -1;
+            var index = -1;
+            for (i = 0; i<segments.length; i++) {
+                if (currentFrame>=segments[i]['StartFrame'] && currentFrame<=segments[i]['EndFrame']) {
+                    foundStartFrame = segments[i]['StartFrame'];
+                    foundEndFrame = segments[i]['EndFrame'];
+                    index = i;
+                    break;
+                }
+            }
+
+            if(index!=-1) {
+                selectSegment(foundStartFrame, foundEndFrame, index);
+            }
+        // }
+    });
+
+    // Select segment by mouse click
+    $("#label-list").click(function(event) {
+        event.preventDefault();
+        player.pause();
+
+        var foundStartFrame = $(event.target).find("span.startSpan").text();
+        var foundEndFrame = $(event.target).find("span.endSpan").text();
+        var index = -1;
+        for (i = 0; i<segments.length; i++) {
+            if (foundStartFrame==segments[i]['StartFrame'] && foundEndFrame==segments[i]['EndFrame']) {
+                index = i;
+                break;
+            }
+        }
+        if (index==-1) {
+            console.log("Unexpected error occured!!"); return;
+        }
+        selectSegment(foundStartFrame, foundEndFrame, index);
+    });
+
+    player.on('ended', function() {
+        reset();
+    });
+    // Complete reset
+    $("#resetFullButton").click(function () {
+        reset();
+        segments.splice(0, segments.length);
+        $("#label-list").empty();
+        $("#label-list-help-text").show();
+        updateSegmentHelperText("","none");
+    });
+    $("#createSegmentButton").click(e => {
+        finalizeSegment();
+    });
+
+    function getFramefunction(){
+        var x= document.getElementById('gotoframe').value;
+        var currentFrame = video.get();
+
+        if (x<0 || x == null || x == '') {return;}
+        if(x<=currentFrame) {
+            frameBackward2(currentFrame-x);
+        }
+        else {
+            frameForward2(x-currentFrame);
+        }   
+    }
+    function frameForward2(framesToSkip) {
+        player.pause();
+        video.seekForward(framesToSkip, null);
+    }
+    function frameBackward2(framesToSkip) {
+        player.pause();
+        video.seekBackward(framesToSkip, null);
+    }
+
+    $(document).on('change', '#availableVideosSelect', function(e) {
+        player.pause();
+        selected_vid = "";
+
+        if (this.options[e.target.selectedIndex].text!="Example video") {
+            selected_vid =  $('#flask-data').attr('vid_dir') + this.options[e.target.selectedIndex].value;
+        } else {
+            selected_vid = this.options[e.target.selectedIndex].value;
+        }
+
+        $("#videoSource").attr("src",selected_vid);
+
+        player.src({
+            src: selected_vid,
+            type: 'video/mp4'
+        });
+        player.load();
+        player.play();
+
+        // change framerate
+        var filename = this.options[e.target.selectedIndex].value;
+        fetch(`${window.origin}/mediainfo`, {
+            method : "POST",
+            credentials : "include",
+            body : JSON.stringify({
+                "filename": filename
+            }),
+            cache : "no-cache",
+            headers : new Headers({
+                "content-type" : "application/json"
+            })
+        }).then(function(response) {
+            if (response.status !== 200) {
+                console.log(`Response status: ${response.status}`);
+                return;
+            }
+            response.json().then(function(data) {
+                video.frameRate =  data.video_fps;
+                $("#fpsText").text(data.video_fps);
+            });
+        });
+    });
+</script>
+{% endblock javascripts %}
